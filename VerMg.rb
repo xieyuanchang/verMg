@@ -1,8 +1,8 @@
 require 'FileUtils'
-require 'zlib' // crc32lib
+require 'zlib' 
 include Zlib 
 
-FILESPILT = "/"
+FILESPILT = '/'
 CRC_FILE_EXTEND = ".crc32"
 FIRST_VER = "1.0.0.000"
 VER_INFO_DIR ="verInfo"
@@ -13,8 +13,10 @@ FileUtils.mkdir_p VER_INFO_DIR
 class VerMg
     def initialize(dirName, *file_extend)
         puts getInfo
-        @file_extend = file_extend.collect { |x| "." + x.gsub(/^\./, "") }
+        @file_extend = file_extend.collect { |x| "." + x }
+		puts @file_extend
         @dirName = dirName.gsub("\\",FILESPILT)
+		puts @dirName
         @cur_VER = FIRST_VER
         @crcMap = {}
         initCrcMap
@@ -49,6 +51,7 @@ class VerMg
     end
     
     def initCrcMap(dir = @dirName)
+		puts dir + FILESPILT + "*"
         Dir::glob(dir + FILESPILT + "*").each { |f|
             if File::ftype(f) == "directory"
                 initCrcMap(f)
@@ -63,8 +66,6 @@ class VerMg
     end
     
     def getVerNoCrcFile(verNo="*")
-         #example:verInfo/kanri_1.0.0.000.crc32
-         #example:verInfo/kanri_*.crc32
         "#{VER_INFO_DIR}#{FILESPILT}#{File::basename(@dirName)}_#{verNo}#{CRC_FILE_EXTEND}"
     end
     
@@ -123,8 +124,8 @@ end
 ARGV.each do|a| 
     if File::ftype(a) == "directory"
         puts "################################### VerMg[#{a}] START ###################################" 
-        verMg = VerMg.new(a)
-        #verMg = VerMg.new(a,"txt","class","dll")
+        #verMg = VerMg.new(a)
+        verMg = VerMg.new(a,"txt","class","dll")
         verMg.update
         puts "################################### VerMg[#{a}] END   ###################################" 
     else
